@@ -102,7 +102,7 @@ def send_filing_alert(filing: dict) -> None:
         )
 
     payload = {**filing, "secret": WEBHOOK_SECRET}
-    response = requests.post(WEBHOOK_URL, json=payload, timeout=30)
+    response = requests.post(WEBHOOK_URL, json=payload, timeout=60)
     response.raise_for_status()
 
     result = response.json()
