@@ -3,7 +3,13 @@ name: SpaceX SEC Filing Monitor
 on:
   schedule:
     - cron: "*/10 * * * *"
-  workflow_dispatch: {}   # lets you trigger a manual run from the Actions tab
+  workflow_dispatch:
+    inputs:
+      test_email:
+        description: "Send a test email for the most recent filing (does not update state)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write   # needed to commit state.json back
@@ -24,7 +30,12 @@ jobs:
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-        run: python check.py
+        run: |
+          if [ "${{ github.event.inputs.test_email }}" = "true" ]; then
+            python check.py --test-email
+          else
+            python check.py
+          fi
 
       - name: Commit updated state
         run: |
